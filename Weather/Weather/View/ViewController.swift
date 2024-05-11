@@ -8,27 +8,47 @@
 import UIKit
 import Kingfisher
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, CityPickerDelegate {
 
+    @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var outerView: UIView!
     @IBOutlet weak var humiditylabel: UILabel!
     @IBOutlet weak var windSpeedLabel: UILabel!
     @IBOutlet weak var weatherStatusLabel: UILabel!
     @IBOutlet weak var tempatureLabel: UILabel!
-    @IBOutlet weak var tarihLabel: UILabel!
-    @IBOutlet weak var weatherImageVİew: UIImageView!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var weatherImageView: UIImageView!
 
     var weatherViewModel = WeatherViewModel()
 
+// MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureOuterView()
+        setDate()
+        configureCityLabel()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         showLoading()
-        fetchWeather()
+    }
+// MARK: - City Label
+    private func configureCityLabel() {
+        cityLabel.text = "Select City"
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cityLabelTapped))
+        cityLabel.isUserInteractionEnabled = true
+        cityLabel.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func cityLabelTapped() {
+        performSegue(withIdentifier: "toCityPickerVC", sender: nil)
+    }
+// MARK: - Configure Views
+    private func setDate() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy"
+        self.dateLabel.text = formatter.string(from: Date.now)
     }
 
     private func showLoading() {
@@ -45,45 +65,6 @@ class ViewController: UIViewController {
         dismiss(animated: true, completion: nil)
     }
 
-    private func fetchWeather() {
-        weatherViewModel.fetchWeather(latitude: 37.7749, longitude: 122.4194) { result in
-            switch result {
-            case .success(let weather):
-                self.humiditylabel.text = "\(weather.main?.humidity ?? 0) %"
-                self.windSpeedLabel.text = "\(weather.wind?.speed ?? 0) km/h"
-                self.weatherStatusLabel.text = "\(weather.weather?[0].description?.capitalized ?? "")"
-                self.tempatureLabel.text = "\(weather.main?.temp ?? 0)°C"
-
-                let formatter = DateFormatter()
-                formatter.dateFormat = "dd.MM.yyyy"
-                self.tarihLabel.text = formatter.string(from: Date.now)
-
-                if weather.weather?[0].description == "clear sky" {
-                    self.weatherImageVİew.image = UIImage(named: "sun")
-                } else if weather.weather?[0].description == "few clouds" {
-                    self.weatherImageVİew.image = UIImage(named: "fewClouds")
-                } else if weather.weather?[0].description == "scattered clouds" {
-                    self.weatherImageVİew.image = UIImage(named: "clouds")
-                } else if weather.weather?[0].description == "broken clouds" {
-                    self.weatherImageVİew.image = UIImage(named: "clouds")
-                } else if weather.weather?[0].description == "shower rain" {
-                    self.weatherImageVİew.image = UIImage(named: "rain")
-                } else if weather.weather?[0].description == "rain" {
-                    self.weatherImageVİew.image = UIImage(named: "rain")
-                } else if weather.weather?[0].description == "thunderstorm" {
-                    self.weatherImageVİew.image = UIImage(named: "thunderStorm")
-                } else if weather.weather?[0].description == "snow" {
-                    self.weatherImageVİew.image = UIImage(named: "snow")
-                } else if weather.weather?[0].description == "mist" {
-                    self.weatherImageVİew.image = UIImage(named: "mist")
-                }
-            case .failure(let error):
-                print(error)
-            }
-            self.hideLoading()
-        }
-    }
-
     private func configureOuterView() {
         outerView.layer.cornerRadius = 20
         outerView.layer.shadowColor = UIColor.black.cgColor
@@ -91,9 +72,51 @@ class ViewController: UIViewController {
         outerView.layer.shadowOffset = .zero
         outerView.layer.shadowRadius = 10
     }
+// MARK: - Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toCityPickerVC" {
+            if let destinationVC = segue.destination as? CityPickerVC {
+                destinationVC.delegate = self
+            }
+        }
+    }
+// MARK: - CityPickerDelegate Fetch Weather
+    func didSelectCity(city: String, longitude: Double, latitude: Double) {
+        weatherViewModel.fetchWeather(latitude: latitude, longitude: longitude) { result in
+            switch result {
+            case .success(let weather):
+                self.cityLabel.text = city
+                self.humiditylabel.text = "\(weather.main?.humidity ?? 0) %"
+                self.windSpeedLabel.text = "\(weather.wind?.speed ?? 0) km/h"
+                self.weatherStatusLabel.text = "\(weather.weather?[0].description?.capitalized ?? "")"
+                self.tempatureLabel.text = "\(weather.main?.temp ?? 0)°C"
 
-    @IBAction func cityButtonClicked(_ sender: Any) {
-        performSegue(withIdentifier: "toCityPickerVC", sender: nil)
+                if weather.weather?[0].description?.contains("rain") == true {
+                    self.weatherImageView.image = UIImage(named: "rain")
+                } else if weather.weather?[0].description?.contains("few clouds") == true {
+                    self.weatherImageView.image = UIImage(named: "fewClouds")
+                }
+                else if weather.weather?[0].description?.contains("cloud") == true {
+                    self.weatherImageView.image = UIImage(named: "clouds")
+                }
+                else if weather.weather?[0].description?.contains("snow") == true {
+                    self.weatherImageView.image = UIImage(named: "snow")
+                }
+                else if weather.weather?[0].description?.contains("clear") == true {
+                    self.weatherImageView.image = UIImage(named: "sun")
+                }
+                else if weather.weather?[0].description?.contains("thunderstorm") == true {
+                    self.weatherImageView.image = UIImage(named: "thunderStorm")
+                }
+                else if weather.weather?[0].description?.contains("mist") == true {
+                    self.weatherImageView.image = UIImage(named: "mist")
+                }
+
+            case .failure(let error):
+                print(error)
+            }
+            self.hideLoading()
+        }
     }
 }
 

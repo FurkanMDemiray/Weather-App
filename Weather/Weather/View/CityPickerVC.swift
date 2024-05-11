@@ -8,6 +8,10 @@
 import UIKit
 import CoreLocation
 
+protocol CityPickerDelegate: AnyObject {
+    func didSelectCity(city: String, longitude: Double, latitude: Double)
+}
+
 class CityPickerVC: UIViewController {
 
     @IBOutlet weak var searchBar: UISearchBar!
@@ -17,6 +21,7 @@ class CityPickerVC: UIViewController {
         "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Isparta", "Mersin", "İstanbul", "İzmir", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir", "Niğde", "Ordu", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van", "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman", "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
     ]
     var filteredCityList: [String] = []
+    weak var delegate: CityPickerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +36,7 @@ class CityPickerVC: UIViewController {
         tableView.showsVerticalScrollIndicator = false
         tableView.register(UINib(nibName: "CityCell", bundle: nil), forCellReuseIdentifier: "CityCell")
     }
+
     private func filterCityList(searchText: String) {
         if searchText.isEmpty {
             filteredCityList = cityList
@@ -43,13 +49,15 @@ class CityPickerVC: UIViewController {
 
     private func forwardGecoordinate(for city: String) {
         let geocoder = CLGeocoder()
-        geocoder.geocodeAddressString(city) { placemarks, error in
+        geocoder.geocodeAddressString(city) { (placemarks, error) in
             if let error = error {
-                print(error)
+                print("Error: \(error.localizedDescription)")
             }
-            if let placemark = placemarks?.first {
-                if let location = placemark.location {
-                    print(location.coordinate)
+            if let placemarks = placemarks {
+                if let location = placemarks.first?.location {
+                    self.delegate?.didSelectCity(city: city, longitude: location.coordinate.longitude, latitude: location.coordinate.latitude)
+                    print("City: \(city) - Latitude: \(location.coordinate.latitude) - Longitude: \(location.coordinate.longitude)")
+                    self.dismiss(animated: true)
                 }
             }
         }
@@ -80,3 +88,5 @@ extension CityPickerVC: UISearchBarDelegate {
         filterCityList(searchText: searchText)
     }
 }
+
+
