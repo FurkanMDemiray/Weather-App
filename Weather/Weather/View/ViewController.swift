@@ -16,6 +16,17 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
 
+    private func fetchWeather() {
+        weatherViewModel.fetchWeather(latitude: 37.7749, longitude: 122.4194) { result in
+            switch result {
+            case .success(let weather):
+                print(weather)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+
 
 }
 

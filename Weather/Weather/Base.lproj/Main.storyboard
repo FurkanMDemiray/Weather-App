@@ -131,10 +131,55 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Yko-KL-BS2"/>
+                    <connections>
+                        <segue destination="xnQ-2v-64C" kind="show" id="Z8d-cI-ZAs"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1055.7251908396945" y="-27.464788732394368"/>
+        </scene>
+        <!--City PickerVC-->
+        <scene sceneID="giB-g6-RwF">
+            <objects>
+                <viewController id="xnQ-2v-64C" customClass="CityPickerVC" customModule="Weather" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Lgo-BE-Aor">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="za3-NR-Ac1">
+                                <rect key="frame" x="0.0" y="175" width="393" height="643"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="1aI-yU-E6u">
+                                <rect key="frame" x="8" y="111" width="393" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="xnQ-2v-64C" id="idc-l1-MhQ"/>
+                                </connections>
+                            </searchBar>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="ts3-KU-mYg"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="za3-NR-Ac1" firstAttribute="leading" secondItem="ts3-KU-mYg" secondAttribute="leading" id="7WL-0v-Am7"/>
+                            <constraint firstItem="1aI-yU-E6u" firstAttribute="leading" secondItem="ts3-KU-mYg" secondAttribute="leading" constant="8" id="891-uC-87N"/>
+                            <constraint firstItem="1aI-yU-E6u" firstAttribute="trailing" secondItem="ts3-KU-mYg" secondAttribute="trailing" constant="8" id="9kK-tx-Ude"/>
+                            <constraint firstItem="ts3-KU-mYg" firstAttribute="trailing" secondItem="za3-NR-Ac1" secondAttribute="trailing" id="FNw-Ta-uba"/>
+                            <constraint firstItem="1aI-yU-E6u" firstAttribute="top" secondItem="ts3-KU-mYg" secondAttribute="top" constant="8" id="IvG-bF-Hih"/>
+                            <constraint firstItem="za3-NR-Ac1" firstAttribute="top" secondItem="1aI-yU-E6u" secondAttribute="bottom" constant="8" id="aCR-qw-i7n"/>
+                            <constraint firstItem="ts3-KU-mYg" firstAttribute="bottom" secondItem="za3-NR-Ac1" secondAttribute="bottom" id="sK6-HD-2nS"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="GzT-cm-EX5"/>
+                    <connections>
+                        <outlet property="searchBar" destination="1aI-yU-E6u" id="jHz-0t-Ahr"/>
+                        <outlet property="tableView" destination="za3-NR-Ac1" id="mE0-hp-B6w"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eHo-YP-Kbt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1866" y="-27"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="p0p-OT-06v">
